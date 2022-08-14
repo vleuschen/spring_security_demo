@@ -1,5 +1,7 @@
 package com.vae.configuration;
 
+import com.vae.filter.JwtAuthenticationTokenFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,6 +19,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  */
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    private JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
 
     //创建BCryptPasswordEncoder注入容器
     @Bean
@@ -37,6 +42,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/user/login").anonymous()
             // 除上面外的所有请求全部需要鉴权认证
             .anyRequest().authenticated();
+
+        //设置JwtAuthenticationTokenFilter在UsernamePasswordAuthenticationFilter之前执行，验证token的合法性
+        http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
     }
 
     //定义一个权限过滤器

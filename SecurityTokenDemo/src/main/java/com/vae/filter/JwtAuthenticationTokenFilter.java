@@ -21,6 +21,10 @@ import java.util.Objects;
 /**
  * @author vleus
  * @date 2022年08月11日 22:37
+ * 获取token
+ * 解析token获取其中的userid
+ * 从redis中获取用户信息
+ * 存入SecurityContextHolder
  */
 @Component
 public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
@@ -33,7 +37,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
 
         //获取token
         String token = request.getHeader("token");
-        if (StringUtils.hasText(token)) {
+        if (!StringUtils.hasText(token)) {
             //直接放行
             filterChain.doFilter(request,response);
             return;

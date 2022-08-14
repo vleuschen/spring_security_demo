@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -19,6 +20,11 @@ import java.util.Objects;
 /**
  * @author vleus
  * @date 2022年08月07日 22:47
+ * 1、自定义登录接口
+ *  1.1 调用ProviderManager的方法进行认证，如果认证通过生成jwt；
+ *  1.2 把用户信息存入redis
+ * 2、自定义UerDetailService
+ *  在这个类中实现去查询数据库
  */
 @Service
 public class     LoginServiceImpl implements LoginService {
@@ -49,5 +55,19 @@ public class     LoginServiceImpl implements LoginService {
         Map<String,String> map =new HashMap<>();
         map.put("token", jwt);
         return new ResponseResult(200,"登录成功",map);
+    }
+
+    @Override
+    public ResponseResult logout() {
+
+        //获取SecurityContextHolder中的用户id
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+                (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) usernamePasswordAuthenticationToken.getPrincipal();
+        Long userId = loginUser.getUser().getId();
+        //删除redis中的值
+        redisCache.deleteObject("login:" + userId);
+
+        return new ResponseResult(200,"Logout succeeded!");
     }
 }
