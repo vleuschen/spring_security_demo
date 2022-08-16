@@ -3,6 +3,7 @@ package com.vae.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.vae.domain.LoginUser;
 import com.vae.domain.User;
+import com.vae.mapper.MenuMapper;
 import com.vae.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,6 +27,9 @@ public class UserDetailServiceImpl implements UserDetailsService {
     @Resource
     private UserMapper userMapper;
 
+    @Resource
+    private MenuMapper menuMapper;
+
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
 
@@ -39,9 +43,10 @@ public class UserDetailServiceImpl implements UserDetailsService {
         }
 
         //TODO 查询对应的权限信息
-        List<String> permissions = new ArrayList<>(Arrays.asList(
-                "test","admin"
-        ));
+//        List<String> permissions = new ArrayList<>(Arrays.asList(
+//                "test","admin"
+//        ));
+        List<String> permissions = menuMapper.selectPermsByUserId(user.getId());
         //封装UserDetails对象并返回
 
         return new LoginUser(user,permissions);

@@ -1,6 +1,7 @@
 package com.vae;
 
 import com.vae.domain.User;
+import com.vae.mapper.MenuMapper;
 import com.vae.mapper.UserMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,6 +19,9 @@ public class MapperTest {
 
     @Resource
     private UserMapper userMapper;
+
+    @Resource
+    private MenuMapper menuMapper;
 
     @Test
     public void testUserMapper() {
@@ -40,6 +44,15 @@ public class MapperTest {
         boolean matches = bCryptPasswordEncoder.matches("123456", "$2a$10$rFs3owudJuhfJH9GyVdnuO3Ai3lpfPIcRQECa7pJU7a.oJMsNpY.G");
 
         System.out.println(matches);
+
+    }
+
+    @Test
+    public void testSelectPermsByUserId() {
+
+        List<String> list = menuMapper.selectPermsByUserId(1l);
+
+        System.out.println(list);
 
     }
 
