@@ -1,6 +1,7 @@
 package com.vae.configuration;
 
 import com.vae.filter.JwtAuthenticationTokenFilter;
+import com.vae.handler.AuthenticationEntryPointImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +13,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
@@ -24,6 +27,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
+
+    @Autowired
+    private AuthenticationEntryPoint authenticationEntryPoint;
+
+    @Autowired
+    private AccessDeniedHandler accessDeniedHandler;
 
     //创建BCryptPasswordEncoder注入容器
     @Bean
@@ -47,6 +56,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         //设置JwtAuthenticationTokenFilter在UsernamePasswordAuthenticationFilter之前执行，验证token的合法性
         http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
+
+        //配置异常处理器
+        http.exceptionHandling()
+                //配置认证失败处理器
+                .authenticationEntryPoint(authenticationEntryPoint)
+                //配置授权失败处理器
+                .accessDeniedHandler(accessDeniedHandler);
+
     }
 
     //定义一个权限过滤器
