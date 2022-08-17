@@ -64,6 +64,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //配置授权失败处理器
                 .accessDeniedHandler(accessDeniedHandler);
 
+        //允许跨域请求
+        http.cors();
+
     }
 
     //定义一个权限过滤器
